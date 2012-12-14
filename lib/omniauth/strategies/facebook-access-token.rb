@@ -64,7 +64,7 @@ module OmniAuth
       end
 
       def client
-        ::OAuth2::Client.new(options.client_id, options.client_secret, options.client_options)
+        ::OAuth2::Client.new(options.client_id, options.client_secret, deep_symbolize(options.client_options))
       end
 
       def request_phase
@@ -95,7 +95,7 @@ module OmniAuth
         self.env['omniauth.auth'] = hash
         call_app!
 
-       rescue ::OAuth2::Error
+       rescue ::OAuth2::Error => e
          fail!(:invalid_credentials, e)
        rescue ::MultiJson::DecodeError => e
          fail!(:invalid_response, e)
@@ -106,6 +106,13 @@ module OmniAuth
       end
 
       protected
+
+      def deep_symbolize(hash)
+        hash.inject({}) do |h, (k,v)|
+          h[k.to_sym] = v.is_a?(Hash) ? deep_symbolize(v) : v
+          h
+        end
+      end
 
       def build_access_token
         ::OAuth2::AccessToken.from_hash(
