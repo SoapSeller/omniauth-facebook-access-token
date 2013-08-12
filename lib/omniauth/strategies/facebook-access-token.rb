@@ -115,9 +115,12 @@ module OmniAuth
       end
 
       def build_access_token
+        # Options supported by `::OAuth2::AccessToken#initialize` and not overridden by `access_token_options`
+        hash = request.params.slice("access_token", "expires_at", "expires_in", "refresh_token")
+        hash.update(options.access_token_options)
         ::OAuth2::AccessToken.from_hash(
           client, 
-          {"access_token" => request.params["access_token"]}.update(options.access_token_options)
+          hash
         )
       end
 
