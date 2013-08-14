@@ -84,7 +84,7 @@ module OmniAuth
 
         # Validate that the token belong to the application
         app_raw = self.access_token.get('/app').parsed
-        if app_raw["id"] != options.client_id
+        if app_raw["id"] != options.client_id.to_s
           raise ArgumentError.new("Access token doesn't belong to the client.")
         end
 
