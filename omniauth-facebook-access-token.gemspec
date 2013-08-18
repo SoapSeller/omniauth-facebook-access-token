@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
 
   gem.authors       = ["Dor Shahaf"]
   gem.email         = ["dor@shahaf.com"]
+  gem.license       = 'MIT'
   gem.description   = %q{A Facebook using access-token strategy for OmniAuth. Can be used for client side Facebook login. }
   gem.summary       = %q{A Facebook using access-token strategy for OmniAuth.}
   gem.homepage      = "https://github.com/soapseller/omniauth-facebook-access-token"
