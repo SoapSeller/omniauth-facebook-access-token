@@ -148,7 +148,6 @@ module OmniAuth
 
         url.to_s
       end
-
     end
   end
 end
