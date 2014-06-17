@@ -35,7 +35,7 @@ module OmniAuth
           'name' => raw_info['name'],
           'first_name' => raw_info['first_name'],
           'last_name' => raw_info['last_name'],
-          'image' => "#{options[:secure_image_url] ? 'https' : 'http'}://graph.facebook.com/#{uid}/picture?type=#{options[:image_size] || 'square'}",
+          'image' => image_url(uid, options),
           'description' => raw_info['bio'],
           'urls' => {
             'Facebook' => raw_info['link'],
@@ -63,7 +63,7 @@ module OmniAuth
       def raw_info
         @raw_info ||= access_token.get('/me', info_options).parsed || {}
       end
-      
+
       def info_options
         options[:info_fields] ? {:params => {:fields => options[:info_fields]}} : {}
       end
@@ -124,7 +124,7 @@ module OmniAuth
         hash = request.params.slice("access_token", "expires_at", "expires_in", "refresh_token")
         hash.update(options.access_token_options)
         ::OAuth2::AccessToken.from_hash(
-          client, 
+          client,
           hash
         )
       end
@@ -136,6 +136,19 @@ module OmniAuth
         end
       end
 
+      def image_url(uid, options)
+        uri_class = options[:secure_image_url] ? URI::HTTPS : URI::HTTP
+        url = uri_class.build({:host => 'graph.facebook.com', :path => "/#{uid}/picture"})
+
+        query = if options[:image_size].is_a?(String)
+          { :type => options[:image_size] }
+        elsif options[:image_size].is_a?(Hash)
+          options[:image_size]
+        end
+        url.query = Rack::Utils.build_query(query) if query
+
+        url.to_s
+      end
     end
   end
 end
