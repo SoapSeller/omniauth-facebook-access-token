@@ -1,3 +1,5 @@
+# *** Project is no longer being maintained ***
+
 # OmniAuth Facebook Access Token
 
 Facebook Access Token Strategy for OmniAuth 1.0.
