@@ -64,7 +64,10 @@ module OmniAuth
       end
 
       def info_options
-        options[:info_fields] ? {:params => {:fields => options[:info_fields]}} : {}
+        params = options[:info_fields] ? {fields: options[:info_fields]} : {}
+        params[:appsecret_proof] = appsecret_proof
+
+        {params: params}
       end
 
       def client
@@ -85,12 +88,6 @@ module OmniAuth
 
         self.access_token = build_access_token
         self.access_token = self.access_token.refresh! if self.access_token.expired?
-
-        # Validate that the token belong to the application
-        app_raw = self.access_token.get('/app').parsed
-        if app_raw["id"] != options.client_id.to_s
-          raise ArgumentError.new("Access token doesn't belong to the client.")
-        end
 
         # Instead of calling super, duplicate the functionlity, but change the provider to 'facebook'.
         # This is done in order to preserve compatibilty with the regular facebook provider
@@ -147,6 +144,10 @@ module OmniAuth
         url.query = Rack::Utils.build_query(query) if query
 
         url.to_s
+      end
+
+      def appsecret_proof
+        OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), options.client_secret, access_token.token)
       end
     end
   end
